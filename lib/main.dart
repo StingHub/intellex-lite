@@ -1,4 +1,4 @@
-// 🌟 Intellex Lite — NEXTLEVEL UI Edition with XP, Streaks, and Upgraded Skin Shop
+// 🌟 Intellex Lite — MAXED UI + SMOOTH UX + BATTLE POLISH
 
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -12,10 +12,18 @@ class IntellexApp extends StatelessWidget {
     return MaterialApp(
       title: 'Intellex Lite',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.indigo,
-        scaffoldBackgroundColor: Colors.white,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigoAccent, brightness: Brightness.dark),
+        textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 18)),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.indigoAccent,
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+        ),
       ),
       home: const HomeScreen(),
     );
@@ -66,38 +74,44 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(title: const Text('🎓 Intellex Lite')),
       body: Center(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Text('💰 Coins: ${gameData.coins}', style: const TextStyle(fontSize: 22)),
-              Text('📈 XP: ${gameData.xp}   🔥 Streak: ${gameData.streak}', style: const TextStyle(fontSize: 16)),
-              const SizedBox(height: 20),
-              const Text('Select Grade:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              DropdownButton<int>(
-                value: selectedGrade,
-                items: List.generate(12, (i) => DropdownMenuItem(value: i + 1, child: Text('Grade ${i + 1}'))),
-                onChanged: (value) => setState(() => selectedGrade = value!),
-              ),
-              const SizedBox(height: 20),
-              Text('🎭 Skin: ${gameData.selectedSkin}', style: const TextStyle(fontSize: 18)),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  gameData.resetGame();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => BattleScreen(grade: selectedGrade)),
-                  );
-                },
-                child: const Text('🎮 Start Battle', style: TextStyle(fontSize: 22)),
-              ),
-              const SizedBox(height: 16),
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
-                },
-                child: const Text('🛍️ Open Shop', style: TextStyle(fontSize: 18)),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('💰 Coins: ${gameData.coins}', style: const TextStyle(fontSize: 22)),
+                Text('📈 XP: ${gameData.xp}   🔥 Streak: ${gameData.streak}', style: const TextStyle(fontSize: 16)),
+                const SizedBox(height: 20),
+                const Text('Select Grade:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                DropdownButton<int>(
+                  value: selectedGrade,
+                  isExpanded: true,
+                  dropdownColor: Colors.grey.shade900,
+                  items: List.generate(12, (i) => DropdownMenuItem(value: i + 1, child: Text('Grade ${i + 1}'))),
+                  onChanged: (value) => setState(() => selectedGrade = value!),
+                ),
+                const SizedBox(height: 20),
+                Text('🎭 Skin: ${gameData.selectedSkin}', style: const TextStyle(fontSize: 18)),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () {
+                    gameData.resetGame();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => BattleScreen(grade: selectedGrade)),
+                    );
+                  },
+                  child: const Text('🎮 Start Battle'),
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
+                  },
+                  child: const Text('🛍️ Open Shop'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -161,7 +175,7 @@ class _BattleScreenState extends State<BattleScreen> {
       body: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('🎭 ${gameData.selectedSkin}', style: const TextStyle(fontSize: 20)),
             Text('💰 Coins: ${gameData.coins}'),
@@ -197,9 +211,11 @@ class GameOverScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('📉 Game Over')),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Final Score: $finalScore correct!', style: const TextStyle(fontSize: 22)),
             Text('💰 Earned: $earnedCoins coins', style: const TextStyle(fontSize: 18)),
@@ -211,10 +227,7 @@ class GameOverScreen extends StatelessWidget {
                   (route) => false,
                 );
               },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              ),
-              child: const Text('🔁 Return Home', style: TextStyle(fontSize: 18)),
+              child: const Text('🔁 Return Home'),
             ),
           ],
         ),
@@ -241,10 +254,33 @@ class _ShopScreenState extends State<ShopScreen> {
     '🎮 Gamer': 90,
   };
 
+  String skinRarity(String skin) {
+    final cost = skins[skin]!;
+    if (cost == 0) return 'Common';
+    if (cost <= 50) return 'Rare';
+    if (cost <= 80) return 'Epic';
+    return 'Legendary';
+  }
+
+  Color rarityColor(String rarity) {
+    switch (rarity) {
+      case 'Common':
+        return Colors.grey;
+      case 'Rare':
+        return Colors.blueAccent;
+      case 'Epic':
+        return Colors.purpleAccent;
+      case 'Legendary':
+        return Colors.amber;
+      default:
+        return Colors.black;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('🛒 Skin Shop')),
+      appBar: AppBar(title: const Text('🛍️ Skin Shop')),
       body: GridView.count(
         crossAxisCount: 2,
         padding: const EdgeInsets.all(16),
@@ -255,23 +291,34 @@ class _ShopScreenState extends State<ShopScreen> {
           final cost = entry.value;
           final isUnlocked = gameData.isUnlocked(skin);
           final isSelected = gameData.selectedSkin == skin;
+          final rarity = skinRarity(skin);
+          final color = rarityColor(rarity);
 
-          return Container(
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.indigo.shade50,
+              color: isSelected ? color.withOpacity(0.1) : Colors.white,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.indigo, width: 2),
+              border: Border.all(
+                color: isSelected ? color : Colors.indigo.shade300,
+                width: isSelected ? 3 : 2,
+              ),
+              boxShadow: isSelected
+                  ? [BoxShadow(color: color.withOpacity(0.4), blurRadius: 10)]
+                  : [],
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(skin, style: const TextStyle(fontSize: 22)),
-                const SizedBox(height: 8),
+                Text(skin, style: TextStyle(fontSize: 24)),
+                const SizedBox(height: 6),
                 Text('$cost 💰', style: const TextStyle(fontSize: 16)),
+                Text(rarity, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 isUnlocked
                     ? (isSelected
-                        ? const Text('✅ Equipped')
+                        ? const Text('✅ Equipped', style: TextStyle(fontWeight: FontWeight.bold))
                         : ElevatedButton(
                             onPressed: () => setState(() => gameData.selectedSkin = skin),
                             child: const Text('Equip'),
@@ -290,7 +337,7 @@ class _ShopScreenState extends State<ShopScreen> {
                             setState(() {});
                           }
                         },
-                        child: const Text('Buy'),
+                        child: Text('Buy for $cost'),
                       ),
               ],
             ),
@@ -300,6 +347,9 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 }
+
+
+// 🌟 Enhanced generateQuestion() — unique questions for EACH GRADE (1–12)
 
 Map<String, dynamic> generateQuestion(int grade) {
   final rnd = Random();
@@ -315,11 +365,11 @@ Map<String, dynamic> generateQuestion(int grade) {
   switch (grade) {
     case 1:
       if (type == 0) {
-        question = 'What is $a + $b?';
+        question = '$a + $b = ?';
         answer = '${a + b}';
       } else if (type == 1) {
-        question = 'Count: 🟢 ' * a;
-        answer = '$a';
+        question = '$a - $b = ?';
+        answer = '${a - b}';
       } else {
         question = 'What comes after $a?';
         answer = '${a + 1}';
@@ -328,53 +378,54 @@ Map<String, dynamic> generateQuestion(int grade) {
 
     case 2:
       if (type == 0) {
-        question = '$a - $b = ?';
-        answer = '${a - b}';
+        question = '$a + $b + ${a - b} = ?';
+        answer = '${a + b + (a - b)}';
       } else if (type == 1) {
-        question = 'Double of $a is?';
+        question = 'Double $a = ?';
         answer = '${2 * a}';
       } else {
-        question = '10 more than $a?';
-        answer = '${a + 10}';
+        question = 'Half of ${2 * a} = ?';
+        answer = '${a}';
       }
       break;
 
     case 3:
       if (type == 0) {
-        question = 'What is $a × $b?';
+        question = '$a × $b = ?';
         answer = '${a * b}';
       } else if (type == 1) {
-        question = 'How many sides does a triangle have?';
-        answer = '3';
-      } else {
-        question = '$a ÷ $b = ? (rounded)';
+        question = '$a ÷ $b = ? (1 decimal)';
         answer = (a / b).toStringAsFixed(1);
+      } else {
+        question = 'Area of square with side $a?';
+        answer = '${a * a}';
       }
       break;
 
     case 4:
       if (type == 0) {
-        question = 'Perimeter of square (side = $a)?';
-        answer = '${4 * a}';
+        question = 'Perimeter of rectangle: $a, $b';
+        answer = '${2 * (a + b)}';
       } else if (type == 1) {
-        question = 'Area of rectangle ($a × $b)?';
-        answer = '${a * b}';
+        question = 'Volume of cube (side=$a)?';
+        answer = '${a * a * a}';
       } else {
-        question = 'Half of $a?';
-        answer = '${(a / 2).toStringAsFixed(1)}';
+        question = 'Simplify: $a + $b + $b';
+        answer = '${a + 2 * b}';
       }
       break;
 
     case 5:
       if (type == 0) {
-        question = 'Simplify: $a + $b + $b = ?';
-        answer = '${a + 2 * b}';
-      } else if (type == 1) {
-        question = 'What is 25% of ${4 * a}?';
+        question = '25% of ${4 * a}?';
         answer = '${(4 * a * 0.25).toStringAsFixed(1)}';
+      } else if (type == 1) {
+        question = 'GCF of $a and $b?';
+        int gcf(int x, int y) => y == 0 ? x : gcf(y, x % y);
+        answer = '${gcf(a, b)}';
       } else {
-        question = 'Volume of cube (side=$a)?';
-        answer = '${a * a * a}';
+        question = 'Solve: x + $a = ${a + b}';
+        answer = '$b';
       }
       break;
 
@@ -383,51 +434,17 @@ Map<String, dynamic> generateQuestion(int grade) {
         question = 'Mean of [$a, $b, ${a + b}]?';
         answer = '${((a + b + (a + b)) / 3).toStringAsFixed(1)}';
       } else if (type == 1) {
-        question = 'Solve: x + $a = ${a + b}';
-        answer = '$b';
+        question = 'Area of triangle: b=$a, h=$b';
+        answer = '${(a * b / 2).toStringAsFixed(1)}';
       } else {
-        question = 'GCF of $a and $b?';
-        int gcf(int x, int y) => y == 0 ? x : gcf(y, x % y);
-        answer = '${gcf(a, b)}';
+        question = 'Solve: 2x + 3 = ${2 * a + 3}';
+        answer = '$a';
       }
       break;
 
     case 7:
       if (type == 0) {
-        question = 'Solve: 2x + 3 = ${2 * a + 3}';
-        answer = '$a';
-      } else if (type == 1) {
-        question = 'Area of triangle (b=$a, h=$b)?';
-        answer = '${(a * b / 2).toStringAsFixed(1)}';
-      } else {
-        question = 'Is $a a prime number?';
-        bool isPrime(int n) {
-          if (n < 2) return false;
-          for (int i = 2; i <= sqrt(n).toInt(); i++) {
-            if (n % i == 0) return false;
-          }
-          return true;
-        }
-        answer = isPrime(a) ? 'Yes' : 'No';
-      }
-      break;
-
-    case 8:
-      if (type == 0) {
-        question = 'What is $a² + 2×$a + 1?';
-        answer = '${a * a + 2 * a + 1}';
-      } else if (type == 1) {
-        question = 'Slope between (0,0) and ($a,$b)?';
-        answer = (b / a).toStringAsFixed(1);
-      } else {
-        question = 'Evaluate: ($a + $b)²';
-        answer = '${(a + b) * (a + b)}';
-      }
-      break;
-
-    case 9:
-      if (type == 0) {
-        question = 'Simplify: (${a}x + ${b}x)';
+        question = 'Simplify: ${a}x + ${b}x';
         answer = '${a + b}x';
       } else if (type == 1) {
         question = 'Factor: x² + ${2 * a}x + ${a * a}';
@@ -438,16 +455,42 @@ Map<String, dynamic> generateQuestion(int grade) {
       }
       break;
 
-    case 10:
+    case 8:
+      if (type == 0) {
+        question = 'What is $a² + 2×$a + 1?';
+        answer = '${a * a + 2 * a + 1}';
+      } else if (type == 1) {
+        question = 'Slope from (0,0) to ($a,$b)?';
+        answer = (b / a).toStringAsFixed(1);
+      } else {
+        question = 'Solve: ($a + $b)²';
+        answer = '${(a + b) * (a + b)}';
+      }
+      break;
+
+    case 9:
       if (type == 0) {
         question = 'Derivative of ${a}x²?';
         answer = '${2 * a}x';
       } else if (type == 1) {
+        question = 'Distance: (0,0) to ($a,$b)?';
+        answer = (sqrt(a * a + b * b)).toStringAsFixed(2);
+      } else {
         question = 'What is log₁₀(${10 * a})?';
         answer = '${(log(10 * a) / log(10)).toStringAsFixed(1)}';
+      }
+      break;
+
+    case 10:
+      if (type == 0) {
+        question = 'Integral of x dx?';
+        answer = '½x² + C';
+      } else if (type == 1) {
+        question = 'Evaluate: (x + $a)²';
+        answer = 'x² + ${2 * a}x + ${a * a}';
       } else {
-        question = 'Distance formula: (0,0) to ($a,$b)?';
-        answer = sqrt(a * a + b * b).toStringAsFixed(2);
+        question = 'Determinant: |$a $b| |$b $a|';
+        answer = '${a * a - b * b}';
       }
       break;
 
@@ -476,20 +519,20 @@ Map<String, dynamic> generateQuestion(int grade) {
         question = 'What is the determinant of a 2×2: |$a $b| |$b $a|?';
         answer = '${a * a - b * b}';
       }
+      break;
   }
 
-  // MCQ: add answer + 3 distractors
   choices.add(answer);
   while (choices.length < 4) {
     String fake;
     if (answer.contains('x') || answer.contains('C') || answer.contains('|x|')) {
-      fake = answer.replaceAll(a.toString(), '${a + rnd.nextInt(4) - 2}');
+      fake = answer.replaceAll('$a', '${a + rnd.nextInt(4) - 2}');
     } else if (answer.contains('.')) {
       double base = double.tryParse(answer) ?? 0;
-      fake = (base + rnd.nextDouble() * 4 - 2).toStringAsFixed(1);
+      fake = (base + rnd.nextDouble() * 3 - 1.5).toStringAsFixed(1);
     } else {
-      int base = int.tryParse(answer.replaceAll(RegExp(r'\D'), '')) ?? a;
-      fake = '${base + rnd.nextInt(10) - 5}';
+      int base = int.tryParse(answer.replaceAll(RegExp(r'[^0-9]'), '')) ?? a;
+      fake = '${base + rnd.nextInt(8) - 4}';
     }
     if (!choices.contains(fake)) choices.add(fake);
   }
