@@ -14,17 +14,18 @@ class IntellexApp extends StatelessWidget {
       title: 'Intellex: NEXTLEVEL',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF0D0D1A),
-        primaryColor: Colors.indigoAccent,
+        scaffoldBackgroundColor: const Color(0xFF111122), // Deep soft background
+        primaryColor: Colors.tealAccent,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1A1A2E),
-          elevation: 5,
+          backgroundColor: Color(0xFF1C1C2D),
+          elevation: 6,
           centerTitle: true,
           titleTextStyle: TextStyle(
-            color: Colors.cyanAccent,
-            fontSize: 24,
+            color: Colors.tealAccent,
+            fontSize: 26,
             fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
+            fontFamily: 'RobotoMono',
+            letterSpacing: 1.3,
           ),
         ),
         textTheme: const TextTheme(
@@ -35,44 +36,51 @@ class IntellexApp extends StatelessWidget {
             fontFamily: 'RobotoMono',
           ),
           headlineSmall: TextStyle(
-            fontSize: 26,
-            color: Colors.cyanAccent,
+            fontSize: 28,
+            color: Colors.tealAccent,
             fontWeight: FontWeight.bold,
           ),
         ),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.cyanAccent,
+          seedColor: Colors.tealAccent,
           brightness: Brightness.dark,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurple,
-            foregroundColor: Colors.white,
-            shadowColor: Colors.cyanAccent,
+            backgroundColor: Colors.tealAccent,
+            foregroundColor: Colors.black,
+            shadowColor: Colors.teal,
+            elevation: 4,
             textStyle: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              letterSpacing: 1.1,
+              letterSpacing: 1.2,
+              fontFamily: 'RobotoMono',
             ),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 28),
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
           style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Colors.amberAccent),
+            side: const BorderSide(color: Colors.amberAccent, width: 2),
             foregroundColor: Colors.amberAccent,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            textStyle: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'RobotoMono',
+            ),
           ),
         ),
       ),
-      themeAnimationCurve: Curves.easeInOutExpo,
+      themeAnimationCurve: Curves.easeInOutCubicEmphasized,
       themeAnimationDuration: const Duration(milliseconds: 500),
       home: const HomeScreen(),
     );
   }
 }
+
 
 
 class GameData {
