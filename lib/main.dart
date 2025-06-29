@@ -7,60 +7,150 @@ void main() => runApp(const IntellexApp());
 
 class IntellexApp extends StatelessWidget {
   const IntellexApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Intellex Lite',
+      title: 'Intellex: NEXTLEVEL',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF121212),
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigoAccent, brightness: Brightness.dark),
-        textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 18)),
+        scaffoldBackgroundColor: const Color(0xFF0D0D1A),
+        primaryColor: Colors.indigoAccent,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF1A1A2E),
+          elevation: 5,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            color: Colors.cyanAccent,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(
+            fontSize: 18,
+            color: Colors.white70,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'RobotoMono',
+          ),
+          headlineSmall: TextStyle(
+            fontSize: 26,
+            color: Colors.cyanAccent,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.cyanAccent,
+          brightness: Brightness.dark,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigoAccent,
+            backgroundColor: Colors.deepPurple,
             foregroundColor: Colors.white,
-            textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            shadowColor: Colors.cyanAccent,
+            textStyle: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.1,
+            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            side: const BorderSide(color: Colors.amberAccent),
+            foregroundColor: Colors.amberAccent,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
         ),
       ),
+      themeAnimationCurve: Curves.easeInOutExpo,
+      themeAnimationDuration: const Duration(milliseconds: 500),
       home: const HomeScreen(),
     );
   }
 }
 
-class GameData {
-  int coins = 0;
-  int xp = 0;
-  int streak = 0;
-  int correctAnswers = 0;
-  int wrongAnswers = 0;
-  String selectedSkin = '🙂 Default';
-  List<String> unlockedSkins = ['🙂 Default'];
 
+class GameData {
+  int coins;
+  int xp;
+  int streak;
+  int correctAnswers;
+  int wrongAnswers;
+  String selectedSkin;
+  final List<String> unlockedSkins;
+
+  GameData({
+    this.coins = 0,
+    this.xp = 0,
+    this.streak = 0,
+    this.correctAnswers = 0,
+    this.wrongAnswers = 0,
+    this.selectedSkin = '🙂 Default',
+    List<String>? unlockedSkins,
+  }) : unlockedSkins = unlockedSkins ?? ['🙂 Default'];
+
+  /// Resets session-based stats, but retains coins and skins.
   void resetGame() {
-    wrongAnswers = 0;
     correctAnswers = 0;
+    wrongAnswers = 0;
     streak = 0;
   }
 
+  /// Checks if a skin is already unlocked.
   bool isUnlocked(String skin) => unlockedSkins.contains(skin);
 
+  /// Attempts to unlock a skin. Returns true if successful.
   bool unlockSkin(String skin, int cost) {
-    if (!isUnlocked(skin) && coins >= cost) {
-      coins -= cost;
-      unlockedSkins.add(skin);
+    if (isUnlocked(skin) || coins < cost) return false;
+    coins -= cost;
+    unlockedSkins.add(skin);
+    return true;
+  }
+
+  /// Safely changes the selected skin if it's unlocked.
+  bool selectSkin(String skin) {
+    if (isUnlocked(skin)) {
+      selectedSkin = skin;
       return true;
     }
     return false;
   }
+
+  /// Grants XP and coins for a correct answer.
+  void rewardCorrect({int xpGain = 5, int coinGain = 1}) {
+    correctAnswers++;
+    xp += xpGain;
+    coins += coinGain;
+    streak++;
+  }
+
+  /// Handles logic for a wrong answer.
+  void penalizeWrong() {
+    wrongAnswers++;
+    streak = 0;
+  }
+
+  /// Returns the player's current level (example: XP threshold per level = 20).
+  int get level => (xp ~/ 20) + 1;
+
+  /// Returns accuracy percentage.
+  double get accuracy {
+    final total = correctAnswers + wrongAnswers;
+    return total == 0 ? 0 : (correctAnswers / total) * 100;
+  }
 }
+
 
 final GameData gameData = GameData();
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -71,46 +161,101 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('🎓 Intellex Lite')),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('💰 Coins: ${gameData.coins}', style: const TextStyle(fontSize: 22)),
-                Text('📈 XP: ${gameData.xp}   🔥 Streak: ${gameData.streak}', style: const TextStyle(fontSize: 16)),
-                const SizedBox(height: 20),
-                const Text('Select Grade:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                DropdownButton<int>(
-                  value: selectedGrade,
-                  isExpanded: true,
-                  dropdownColor: Colors.grey.shade900,
-                  items: List.generate(12, (i) => DropdownMenuItem(value: i + 1, child: Text('Grade ${i + 1}'))),
-                  onChanged: (value) => setState(() => selectedGrade = value!),
-                ),
-                const SizedBox(height: 20),
-                Text('🎭 Skin: ${gameData.selectedSkin}', style: const TextStyle(fontSize: 18)),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: () {
-                    gameData.resetGame();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => BattleScreen(grade: selectedGrade)),
-                    );
-                  },
-                  child: const Text('🎮 Start Battle'),
-                ),
-                const SizedBox(height: 16),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
-                  },
-                  child: const Text('🛍️ Open Shop'),
-                ),
-              ],
+      appBar: AppBar(
+        title: const Text('🚀 Intellex Prime (Lite-ish)'),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple.shade700,
+        elevation: 8,
+        shadowColor: Colors.amberAccent,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1B1B2F), Color(0xFF16213E)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(26),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '💰 Coins: ${gameData.coins}',
+                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.amber),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '📈 XP: ${gameData.xp}   🔥 Streak: ${gameData.streak}',
+                    style: const TextStyle(fontSize: 18, color: Colors.greenAccent),
+                  ),
+                  const SizedBox(height: 30),
+                  const Text(
+                    '🎯 Choose Your Grade Level',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.cyanAccent),
+                  ),
+                  const SizedBox(height: 10),
+                  DropdownButton<int>(
+                    value: selectedGrade,
+                    dropdownColor: Colors.deepPurple.shade900,
+                    iconEnabledColor: Colors.white,
+                    style: const TextStyle(color: Colors.white),
+                    items: List.generate(
+                      12,
+                      (i) => DropdownMenuItem(
+                        value: i + 1,
+                        child: Text('🧠 Grade ${i + 1}'),
+                      ),
+                    ),
+                    onChanged: (value) => setState(() => selectedGrade = value!),
+                  ),
+                  const SizedBox(height: 30),
+                  Text(
+                    '🎭 Selected Skin: ${gameData.selectedSkin}',
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.pinkAccent),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 40),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(220, 50),
+                      textStyle: const TextStyle(fontSize: 18),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () {
+                      gameData.resetGame();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => BattleScreen(grade: selectedGrade)),
+                      );
+                    },
+                    child: const Text('⚔️ Enter Battle Arena'),
+                  ),
+                  const SizedBox(height: 20),
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.shopping_bag, color: Colors.yellowAccent),
+                    label: const Text('Visit Avatar Shop', style: TextStyle(color: Colors.white)),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.yellowAccent),
+                      minimumSize: const Size(200, 50),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
+                    },
+                  ),
+                  const SizedBox(height: 50),
+                  const Text(
+                    '🌟 Intellex Lite+ Edition 🌟',
+                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white70),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -119,20 +264,43 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+
 class BattleScreen extends StatefulWidget {
   final int grade;
   const BattleScreen({super.key, required this.grade});
+
   @override
   State<BattleScreen> createState() => _BattleScreenState();
 }
 
-class _BattleScreenState extends State<BattleScreen> {
+class _BattleScreenState extends State<BattleScreen> with SingleTickerProviderStateMixin {
   late Map<String, dynamic> question;
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     question = generateQuestion(widget.grade);
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.95, end: 1.05).chain(CurveTween(curve: Curves.easeInOut)).animate(_controller);
+
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _controller.reverse();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void handleAnswer(String choice) {
@@ -147,11 +315,14 @@ class _BattleScreenState extends State<BattleScreen> {
       gameData.streak = 0;
     }
 
+    _controller.forward();
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(correct ? '✅ Correct!' : '❌ Wrong! Answer: ${question['answer']}'),
         backgroundColor: correct ? Colors.green : Colors.red,
         duration: const Duration(milliseconds: 800),
+        behavior: SnackBarBehavior.floating,
       ),
     );
 
@@ -171,26 +342,53 @@ class _BattleScreenState extends State<BattleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('⚔️ Battle Mode')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('🎭 ${gameData.selectedSkin}', style: const TextStyle(fontSize: 20)),
-            Text('💰 Coins: ${gameData.coins}'),
-            Text('✅ ${gameData.correctAnswers}   ❌ ${gameData.wrongAnswers}'),
-            const SizedBox(height: 20),
-            Text('❓ ${question['question']}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 20),
-            ...question['choices'].map<Widget>((choice) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: ElevatedButton(
-                onPressed: () => handleAnswer(choice),
-                child: Text(choice, style: const TextStyle(fontSize: 20)),
+      appBar: AppBar(
+        title: const Text('⚔️ Battle Mode'),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ScaleTransition(
+                scale: _scaleAnimation,
+                child: Column(
+                  children: [
+                    Text('🎭 ${gameData.selectedSkin}', style: const TextStyle(fontSize: 20), textAlign: TextAlign.center),
+                    const SizedBox(height: 6),
+                    Text('💰 Coins: ${gameData.coins}', textAlign: TextAlign.center),
+                    Text('✅ ${gameData.correctAnswers}   ❌ ${gameData.wrongAnswers}', textAlign: TextAlign.center),
+                    const SizedBox(height: 24),
+                    Text(
+                      '❓ ${question['question']}',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
-            )),
-          ],
+              const SizedBox(height: 28),
+              ...question['choices'].map<Widget>((choice) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      backgroundColor: Colors.indigo,
+                      foregroundColor: Colors.white,
+                      textStyle: const TextStyle(fontSize: 18),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: () => handleAnswer(choice),
+                    child: Text(choice, textAlign: TextAlign.center),
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
         ),
       ),
     );
@@ -205,36 +403,70 @@ class GameOverScreen extends StatelessWidget {
     final int finalScore = gameData.correctAnswers;
     final int earnedCoins = finalScore;
 
+    // Reset game state after frame renders
     WidgetsBinding.instance.addPostFrameCallback((_) {
       gameData.resetGame();
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('📉 Game Over')),
-      body: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('Final Score: $finalScore correct!', style: const TextStyle(fontSize: 22)),
-            Text('💰 Earned: $earnedCoins coins', style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
-                  (route) => false,
-                );
-              },
-              child: const Text('🔁 Return Home'),
-            ),
-          ],
+      appBar: AppBar(
+        title: const Text('📉 Game Over'),
+        centerTitle: true,
+        backgroundColor: Colors.redAccent,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.emoji_events, size: 80, color: Colors.amber),
+              const SizedBox(height: 20),
+              Text(
+                '🎯 Final Score\n$finalScore correct!',
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                '💰 Earned: $earnedCoins coins',
+                style: const TextStyle(fontSize: 20, color: Colors.green),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.refresh),
+                label: const Text(
+                  'Return Home',
+                  style: TextStyle(fontSize: 18),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                  backgroundColor: Colors.indigo,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const HomeScreen()),
+                    (route) => false,
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
 
 class ShopScreen extends StatefulWidget {
   const ShopScreen({super.key});
