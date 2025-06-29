@@ -170,71 +170,65 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🚀 Intellex Prime (Lite-ish)'),
+        title: const Text('Intellex Lite'),
         centerTitle: true,
-        backgroundColor: Colors.deepPurple.shade700,
-        elevation: 8,
-        shadowColor: Colors.amberAccent,
+        backgroundColor: const Color(0xFF222831),
+        elevation: 3,
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF1B1B2F), Color(0xFF16213E)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: const Color(0xFF1C1C1C),
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(26),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '💰 Coins: ${gameData.coins}',
-                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.amber),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '📈 XP: ${gameData.xp}   🔥 Streak: ${gameData.streak}',
-                    style: const TextStyle(fontSize: 18, color: Colors.greenAccent),
+                    'Coins: ${gameData.coins}    XP: ${gameData.xp}    🔥 ${gameData.streak}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      color: Colors.white70,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30),
                   const Text(
-                    '🎯 Choose Your Grade Level',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.cyanAccent),
+                    'Select Grade',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   DropdownButton<int>(
                     value: selectedGrade,
-                    dropdownColor: Colors.deepPurple.shade900,
+                    dropdownColor: const Color(0xFF2D2D2D),
                     iconEnabledColor: Colors.white,
                     style: const TextStyle(color: Colors.white),
+                    borderRadius: BorderRadius.circular(10),
                     items: List.generate(
                       12,
                       (i) => DropdownMenuItem(
                         value: i + 1,
-                        child: Text('🧠 Grade ${i + 1}'),
+                        child: Text('Grade ${i + 1}'),
                       ),
                     ),
                     onChanged: (value) => setState(() => selectedGrade = value!),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   Text(
-                    '🎭 Selected Skin: ${gameData.selectedSkin}',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.pinkAccent),
-                    textAlign: TextAlign.center,
+                    'Skin: ${gameData.selectedSkin}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white60,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                   const SizedBox(height: 40),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(220, 50),
-                      textStyle: const TextStyle(fontSize: 18),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
                     onPressed: () {
                       gameData.resetGame();
                       Navigator.push(
@@ -242,25 +236,32 @@ class _HomeScreenState extends State<HomeScreen> {
                         MaterialPageRoute(builder: (_) => BattleScreen(grade: selectedGrade)),
                       );
                     },
-                    child: const Text('⚔️ Enter Battle Arena'),
-                  ),
-                  const SizedBox(height: 20),
-                  OutlinedButton.icon(
-                    icon: const Icon(Icons.shopping_bag, color: Colors.yellowAccent),
-                    label: const Text('Visit Avatar Shop', style: TextStyle(color: Colors.white)),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.yellowAccent),
-                      minimumSize: const Size(200, 50),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: const Text('Start Game'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueGrey.shade700,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(220, 50),
+                      textStyle: const TextStyle(fontSize: 18),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                  OutlinedButton(
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
                     },
+                    child: const Text('Open Shop'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.grey),
+                      minimumSize: const Size(220, 50),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
                   const Text(
-                    '🌟 Intellex Lite+ Edition 🌟',
-                    style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.white70),
+                    'Made with ❤️ by a 10-year-old legend',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
               ),
@@ -271,7 +272,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
 
 class BattleScreen extends StatefulWidget {
   final int grade;
