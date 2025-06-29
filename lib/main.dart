@@ -259,10 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  const Text(
-                    'Made with ❤️ by a 10-year-old legend',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
+                  
                 ],
               ),
             ),
