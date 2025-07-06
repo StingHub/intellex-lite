@@ -588,12 +588,13 @@ class _ShopScreenState extends State<ShopScreen> {
 
 // 🌟 Enhanced generateQuestion() — unique questions for EACH GRADE (1–12)
 
+// Dart: Full Math Question Generator for Grades 1–12
+
+
 Map<String, dynamic> generateQuestion(int grade) {
   final rnd = Random();
-  int a = rnd.nextInt(10 * grade) + 1;
-  int b = rnd.nextInt(10 * grade) + 1;
-  if (b == 0) b = 1;
-
+  int a = rnd.nextInt(100) + 1;
+  int b = rnd.nextInt(100) + 1;
   String question = '';
   String answer = '';
   List<String> choices = [];
@@ -602,10 +603,10 @@ Map<String, dynamic> generateQuestion(int grade) {
   switch (grade) {
     case 1:
       if (type == 0) {
-        question = '$a + $b = ?';
+        question = 'What is $a + $b?';
         answer = '${a + b}';
       } else if (type == 1) {
-        question = '$a - $b = ?';
+        question = 'What is $a - $b?';
         answer = '${a - b}';
       } else {
         question = 'What comes after $a?';
@@ -615,165 +616,158 @@ Map<String, dynamic> generateQuestion(int grade) {
 
     case 2:
       if (type == 0) {
-        question = '$a + $b + ${a - b} = ?';
-        answer = '${a + b + (a - b)}';
+        question = 'What is $a + $b?';
+        answer = '${a + b}';
       } else if (type == 1) {
-        question = 'Double $a = ?';
-        answer = '${2 * a}';
+        question = 'What is $a - $b?';
+        answer = '${a - b}';
       } else {
-        question = 'Half of ${2 * a} = ?';
-        answer = '${a}';
+        question = 'What is 1/2 of ${2 * a}?';
+        answer = '$a';
       }
       break;
 
     case 3:
       if (type == 0) {
-        question = '$a × $b = ?';
-        answer = '${a * b}';
+        question = 'What is ${a % 10} × ${b % 10}?';
+        answer = '${(a % 10) * (b % 10)}';
       } else if (type == 1) {
-        question = '$a ÷ $b = ? (1 decimal)';
-        answer = (a / b).toStringAsFixed(1);
+        question = 'What is ${a % 100} ÷ ${b % 9 + 1}?';
+        answer = (a % 100 / (b % 9 + 1)).toStringAsFixed(1);
       } else {
-        question = 'Area of square with side $a?';
-        answer = '${a * a}';
+        question = 'Area of rectangle with sides ${a % 10} and ${b % 10}?';
+        answer = '${(a % 10) * (b % 10)}';
       }
       break;
 
     case 4:
       if (type == 0) {
-        question = 'Perimeter of rectangle: $a, $b';
-        answer = '${2 * (a + b)}';
+        question = 'Multiply: ${a % 90} × ${b % 20}';
+        answer = '${(a % 90) * (b % 20)}';
       } else if (type == 1) {
-        question = 'Volume of cube (side=$a)?';
-        answer = '${a * a * a}';
+        question = 'Convert ${a % 5}/10 to decimal:';
+        answer = '${((a % 5) / 10).toStringAsFixed(1)}';
       } else {
-        question = 'Simplify: $a + $b + $b';
-        answer = '${a + 2 * b}';
+        question = 'Find the missing factor: ${a % 10} × ? = ${(a % 10) * (b % 10)}';
+        answer = '${b % 10}';
       }
       break;
 
     case 5:
       if (type == 0) {
-        question = '25% of ${4 * a}?';
-        answer = '${(4 * a * 0.25).toStringAsFixed(1)}';
+        question = 'What is ${a % 10}/10 + ${b % 10}/10?';
+        answer = '${((a % 10 + b % 10) / 10).toStringAsFixed(1)}';
       } else if (type == 1) {
-        question = 'GCF of $a and $b?';
-        int gcf(int x, int y) => y == 0 ? x : gcf(y, x % y);
-        answer = '${gcf(a, b)}';
+        question = 'Volume of cube with side ${a % 10}?';
+        answer = '${pow((a % 10), 3).toInt()}';
       } else {
-        question = 'Solve: x + $a = ${a + b}';
-        answer = '$b';
+        question = 'On a line plot, what is the total of ${a % 5} + ${b % 5}?';
+        answer = '${(a % 5) + (b % 5)}';
       }
       break;
 
     case 6:
       if (type == 0) {
-        question = 'Mean of [$a, $b, ${a + b}]?';
-        answer = '${((a + b + (a + b)) / 3).toStringAsFixed(1)}';
+        question = 'What percent is $a of ${a + b}?';
+        answer = '${((a / (a + b)) * 100).toStringAsFixed(1)}%';
       } else if (type == 1) {
-        question = 'Area of triangle: b=$a, h=$b';
-        answer = '${(a * b / 2).toStringAsFixed(1)}';
+        question = 'Solve: ${a % 10}x = ${a % 10 * b % 10}';
+        answer = '${b % 10}';
       } else {
-        question = 'Solve: 2x + 3 = ${2 * a + 3}';
-        answer = '$a';
+        question = 'What is -$a + $b?';
+        answer = '${-a + b}';
       }
       break;
 
     case 7:
       if (type == 0) {
-        question = 'Simplify: ${a}x + ${b}x';
-        answer = '${a + b}x';
+        question = 'Solve: 2x + 5 = ${2 * a + 5}';
+        answer = '$a';
       } else if (type == 1) {
-        question = 'Factor: x² + ${2 * a}x + ${a * a}';
-        answer = '(x + $a)²';
+        question = 'What is $a% of $b?';
+        answer = '${((a / 100) * b).toStringAsFixed(1)}';
       } else {
-        question = 'Evaluate |$a - $b|';
-        answer = '${(a - b).abs()}';
+        question = 'What is the mean of $a, $b, ${a + b}?';
+        answer = '${((a + b + a + b) / 3).toStringAsFixed(1)}';
       }
       break;
 
     case 8:
       if (type == 0) {
-        question = 'What is $a² + 2×$a + 1?';
-        answer = '${a * a + 2 * a + 1}';
-      } else if (type == 1) {
-        question = 'Slope from (0,0) to ($a,$b)?';
+        question = 'Slope of line from (0,0) to ($a,$b)?';
         answer = (b / a).toStringAsFixed(1);
+      } else if (type == 1) {
+        question = 'Apply exponent rule: $a^2 × $a^3';
+        answer = '${a}^5';
       } else {
-        question = 'Solve: ($a + $b)²';
-        answer = '${(a + b) * (a + b)}';
+        question = 'What is √${a * a}?';
+        answer = '$a';
       }
       break;
 
     case 9:
       if (type == 0) {
-        question = 'Derivative of ${a}x²?';
-        answer = '${2 * a}x';
+        question = 'Factor: x² + ${2 * a}x + ${a * a}';
+        answer = '(x + $a)²';
       } else if (type == 1) {
-        question = 'Distance: (0,0) to ($a,$b)?';
-        answer = (sqrt(a * a + b * b)).toStringAsFixed(2);
+        question = 'What is ($a + $b)²?';
+        answer = '${(a + b) * (a + b)}';
       } else {
-        question = 'What is log₁₀(${10 * a})?';
-        answer = '${(log(10 * a) / log(10)).toStringAsFixed(1)}';
+        question = 'Quadratic: x² - ${a + b}x + ${a * b} = 0 → roots?';
+        answer = '$a and $b';
       }
       break;
 
     case 10:
       if (type == 0) {
-        question = 'Integral of x dx?';
-        answer = '½x² + C';
+        question = 'Name a property of triangles';
+        answer = 'Sum of angles = 180°';
       } else if (type == 1) {
-        question = 'Evaluate: (x + $a)²';
-        answer = 'x² + ${2 * a}x + ${a * a}';
+        question = 'Find area of circle with r=${a % 10}';
+        answer = '${(3.14 * pow(a % 10, 2)).toStringAsFixed(1)}';
       } else {
-        question = 'Determinant: |$a $b| |$b $a|';
-        answer = '${a * a - b * b}';
+        question = 'Right triangle: legs $a, $b. Hypotenuse?';
+        answer = '${sqrt(a * a + b * b).toStringAsFixed(1)}';
       }
       break;
 
     case 11:
       if (type == 0) {
-        question = 'Limit x→0 of sin(x)/x?';
-        answer = '1';
+        question = 'What is log base 10 of ${10 * a}?';
+        answer = '${(log(10 * a) / log(10)).toStringAsFixed(1)}';
       } else if (type == 1) {
-        question = 'Derivative of sin($a x)?';
-        answer = '${a}cos($a x)';
+        question = 'Solve: (x - $a)(x + $a) = 0';
+        answer = '$a and -$a';
       } else {
-        question = 'Integral of 1/x dx?';
-        answer = 'ln|x| + C';
+        question = 'What is ($a + $b)! if both < 5?';
+        int f = 1;
+        for (int i = 1; i <= a + b; i++) f *= i;
+        answer = '$f';
       }
       break;
 
     case 12:
     default:
       if (type == 0) {
-        question = 'What is ∫ x dx?';
-        answer = '½x² + C';
+        question = 'What is the limit as x→0 of sin(x)/x?';
+        answer = '1';
       } else if (type == 1) {
-        question = 'Evaluate: (x + $a)²';
-        answer = 'x² + ${2 * a}x + ${a * a}';
+        question = 'Evaluate: cos²($a) + sin²($a)';
+        answer = '1';
       } else {
-        question = 'What is the determinant of a 2×2: |$a $b| |$b $a|?';
-        answer = '${a * a - b * b}';
+        question = 'Matrix: Add [[1,2],[3,4]] + [[${a},0],[0,${b}]]';
+        answer = '[[${1 + a},2],[3,${4 + b}]]';
       }
       break;
   }
 
   choices.add(answer);
   while (choices.length < 4) {
-    String fake;
-    if (answer.contains('x') || answer.contains('C') || answer.contains('|x|')) {
-      fake = answer.replaceAll('$a', '${a + rnd.nextInt(4) - 2}');
-    } else if (answer.contains('.')) {
-      double base = double.tryParse(answer) ?? 0;
-      fake = (base + rnd.nextDouble() * 3 - 1.5).toStringAsFixed(1);
-    } else {
-      int base = int.tryParse(answer.replaceAll(RegExp(r'[^0-9]'), '')) ?? a;
-      fake = '${base + rnd.nextInt(8) - 4}';
-    }
+    int delta = rnd.nextInt(10) - 5;
+    String fake = (int.tryParse(answer.replaceAll(RegExp(r'[^0-9\-]'), '')) ?? 0 + delta).toString();
     if (!choices.contains(fake)) choices.add(fake);
   }
-
   choices.shuffle();
   return {'question': question, 'answer': answer, 'choices': choices};
 }
+
